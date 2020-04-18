@@ -24,5 +24,20 @@ nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 .content textarea { min-height: 12em; resize: vertical; }
 input.danger { color: #cc2f2e; }
 input[type=submit] { align-self: start; min-width: 10em; }
-.node {stroke: #fff; stroke-width: 1.5px;}
-.link {stroke: #999; stroke-opacity: 0.6;}
+.links line {
+    stroke: #999;
+    stroke-opacity: 0.6;
+  }
+  
+  .nodes circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+  .node text {
+    pointer-events: none;
+    font: 10px sans-serif;
+  }
+
+  .label {
+    font-size: 0.75em;
+  }

@@ -52,22 +52,7 @@ class GraphMaker:
         #graph_in_json = json.dumps(d)
 
         # Zapis danych do pliku w folderze statycznych zasobów.
-        with open('SI_proj/static/graph.json', 'w') as outfile:
+        with open('static/graph.json', 'w') as outfile:
             json.dump(d, outfile)
 
         # return graph_in_json
-
-
-# tests
-arr = [[0, 0.53682293, 0.49240103, 0.49318128, 0.04009207, 0.03515585],
-           [0.53682293, 0, 0.49677289, 0.54755336, 0.01423449, 0.01342816],
-           [0.49240103, 0.49677289, 0, 0.4856281, 0.03298175, 0.0299892],
-           [0.49318128, 0.54755336, 0.4856281, 0, 0.02699985, 0.02418876],
-           [0.04009207, 0.01423449, 0.03298175, 0.02699985, 0, 0.97959166],
-           [0.03515585, 0.01342816, 0.0299892, 0.02418876, 0.97959166, 0]]
-filenames = ['IO Analiza biznesowa i systemowa.pdf', 'IO Obszary działań IO.pdf', 'IO Projektowanie.pdf',
-                 'IO Wprowadzenie.pdf', 'Kamizelka.pdf', 'Latarnik.pdf']
-GM = GraphMaker()
-GM.create_graph(arr, filenames, filenames)
-GM.graph_to_json()
-# WW.run()

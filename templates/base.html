@@ -2,73 +2,172 @@
 <title>Flaskr</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <!-- Load d3.js -->
-<script src="https://d3js.org/d3.v4.js"></script>
+<!--
+<script src="https://d3js.org/d3.v5.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>-->
+<script src="//d3js.org/d3.v3.min.js"></script>
 <nav>
   <h1>Flaskr</h1>
 </nav>
 <section>
-  <!-- Create a div where the graph will take place -->
-<div id="my_dataviz"></div>
-
+  <!--<svg width="960" height="600"></svg>-->
 <!-- Skrypt JS/D3js tutaj-->
   <script>
-    var margin = {top: 10, right: 30, bottom: 30, left: 40},
-  width = 400 - margin.left - margin.right,
-  height = 400 - margin.top - margin.bottom;
+    var width = 960,
+    height = 600,
+    radius = 12;
 
-// append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
-.append("svg")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-.append("g")
-  .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-d3.json("{{ url_for('static', filename='graph.json') }}", function( data) {
+    d3.json("{{url_for('static', filename='graph.json')}}", function(error, graph) {
+      if (error) throw error;
 
-  // Initialize the links
-  var link = svg
-    .selectAll("line")
-    .data(data.links)
-    .enter()
-    .append("line")
-      .style("stroke", "#aaa")
-
-  // Initialize the nodes
-  var node = svg
-    .selectAll("circle")
-    .data(data.nodes)
-    .enter()
-    .append("circle")
-      .attr("r", 20)
-      .style("fill", "#69b3a2")
-
-  // Let's list the force we wanna apply on the network
-  var simulation = d3.forceSimulation(data.nodes)                 // Force algorithm is applied to data.nodes
-      .force("link", d3.forceLink()                               // This force provides links between nodes
-            .id(function(d) { return d.id; })                     // This provide  the id of a node
-            .links(data.links)                                    // and this the list of links
-      )
-      .force("charge", d3.forceManyBody().strength(-400))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
-      .force("center", d3.forceCenter(width / 2, height / 2))     // This force attracts nodes to the center of the svg area
-      .on("end", ticked);
-
-  // This function is run at each iteration of the force algorithm, updating the nodes position.
-  function ticked() {
-    link
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-
-    node
-         .attr("cx", function (d) { return d.x+6; })
-         .attr("cy", function(d) { return d.y-6; });
-  }
-
-});
+      var link = svg.selectAll("line")
+          .data(graph.links)
+          .enter().append("line")
+          .style("stroke", "#111")
+          .style("stroke-width", "2px");
+         
+      var force = d3.layout.force()
+        .gravity(.05)
+        .charge(-240)
+        .linkDistance(50)
+        .size([width, height]);
 
 
+      var node = svg.selectAll("circle")
+          .data(graph.nodes)
+          .enter().append("circle")
+          .attr("r", radius - .75)
+          .style("fill", "#999")
+          .style("stroke", "#111")
+          .call(force.drag);
+
+      var texts = svg.selectAll("text.label")
+            .data(graph.nodes)
+            .enter().append("text")
+            .attr("class", "label")
+            .attr("fill", "black")
+            .attr("dx", "1.05em")
+            .attr("dy", ".28em")
+            .text(function(d) {  return d.name;  });
+
+          /*node.append("text")
+            .attr("dx", -18)
+            .attr("dy", 8)
+            .style("font-size", "18px") 
+
+            .text(function (d) {
+                return d.name
+            });*/
+
+      node.append("title")
+          .text(function(d) { return d.name; });
+
+      force
+          .nodes(graph.nodes)
+          .links(graph.links)
+          .on("tick", tick)
+          .start();
+
+      function tick() {
+        node.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
+            .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+
+        link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+        texts.attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+    });
+      }
+    });
+    /*var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+    var simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(function(d){return 5 / d.weight;}).strength(0.01))
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .velocityDecay(0.4)
+        .force("collide", d3.forceCollide( function(d) {return d.r + 8 }).iterations(16) )
+        
+         
+    d3.json("{{url_for('static', filename='graph.json')}}", function(error, graph) {
+      if (error) throw error;
+
+      var link = svg.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(graph.links)
+        .enter().append("line")
+        .attr("stroke-width", function(d) { return Math.sqrt(d.weight); });
+
+      var node = svg.append("g")
+        .attr("class", "nodes")
+        .selectAll("g")
+        .data(graph.nodes)
+        .enter().append("g")
+        
+      var circles = node.append("circle")
+          .attr("r", 10)
+          .attr("fill", "#333")
+          .call(d3.drag()
+              .on("start", dragstarted)
+              .on("drag", dragged)
+              .on("end", dragended));
+
+      var lables = node.append("text")
+          .text(function(d) {
+            return d.name;
+          })
+          .attr('x', 6)
+          .attr('y', 3);
+
+      node.append("title")
+          .text(function(d) { return d.name; });
+
+      simulation
+          .nodes(graph.nodes)
+          .on("tick", ticked);
+
+      simulation.force("link")
+          .links(graph.links);
+
+      function ticked() {
+        link
+            .attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+        node
+            .attr("transform", function(d) {
+              return "translate(" + d.x + "," + d.y + ")";
+            })
+      }
+    });
+
+    function dragstarted(d) {
+      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+
+    function dragged(d) {
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+      if (!d3.event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }*/
   </script>
 </section>

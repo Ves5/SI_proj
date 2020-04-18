@@ -6,12 +6,13 @@ from tkinter import messagebox
 from tkinter.ttk import *
 
 from SimilarityTable import SimilarityTable
-from drawing.GraphDrawer import GraphDrawer
+from GraphMaker import GraphMaker
 from DocumentComparator import DocumentComparator
 from utils.IOUtils import IOUtils
 import nltk
+import WebWrapper
 
-DEMO_MODE = True
+DEMO_MODE = False
 
 
 def hide_components():
@@ -49,8 +50,10 @@ def compare_documents(paths_to_pdf_files, pdf_names):
     button_show_similarity_table.grid(row=5, column=0)
 
     # TODO create thread here and make sure that previous has ended work
-    drawer = GraphDrawer(DEMO_MODE)
-    drawer.draw(arr, pdf_names)
+    drawer = GraphMaker()
+    drawer.create_graph(arr, pdf_names, paths_to_pdf_files)
+    drawer.graph_to_json()
+    WebWrapper.run()
 
 
 def browse_files():
@@ -147,4 +150,7 @@ else:
     filenames = ['IO Analiza biznesowa i systemowa.pdf', 'IO Obszary działań IO.pdf', 'IO Projektowanie.pdf',
                  'IO Wprowadzenie.pdf', 'Kamizelka.pdf', 'Latarnik.pdf']
 
-    GraphDrawer(demo_mode=DEMO_MODE).draw(arr, filenames)
+    gm = GraphMaker()
+    gm.create_graph(arr, filenames, filenames)
+    gm.graph_to_json()
+    WebWrapper.run()
