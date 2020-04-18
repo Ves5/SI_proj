@@ -27,17 +27,20 @@
       if (error) throw error;
 
       function linkColor(d){
-        if(d.weight > 0 && d.weight < 0.2){
-          return '#7FFF00';
+        if(d.weight > 0 && d.weight < 0.05){
+          return '#00FFFF';
         }
-        else if (d.weight >= 0.2 && d.weight < 0.6){
-          return '#DC143C';
+        else if (d.weight >= 0.05 && d.weight < 0.1){
+          return '#0000FF';
         }
-        else if (d.weight >= 0.6 && d.weight < 0.8){
-          return '#00008B';
+        else if (d.weight >= 0.1 && d.weight < 0.2){
+          return '#8A2BE2';
+        }
+        else if (d.weight >= 0.2 && d.weight < 0.5){
+          return '#FF1493';
         }
         else{
-          return '#FF1493';
+          return '#DC143C';
         }
       }
 
