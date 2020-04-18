@@ -1,5 +1,5 @@
 /cache
-/assets
+/assets/*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
