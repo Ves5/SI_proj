@@ -18,7 +18,7 @@ def index():
 def run():
     """Włącza serwer http Flask.
     """
-    app.run(port = 1415)
+    app.run(port = 80)
 
 def close():
     """Wyłącza serwer http Flask - nie sprawdzone!
