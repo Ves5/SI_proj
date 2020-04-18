@@ -17,6 +17,8 @@
     height = 600,
     radius = 12;
 
+    var color = d3.scale.category20();
+
     var svg = d3.select("body").append("svg")
         .attr("width", width)
         .attr("height", height);
@@ -24,17 +26,36 @@
     d3.json("{{url_for('static', filename='graph.json')}}", function(error, graph) {
       if (error) throw error;
 
+      function linkColor(d){
+        if(d.weight > 0 && d.weight < 0.2){
+          return '#7FFF00';
+        }
+        else if (d.weight >= 0.2 && d.weight < 0.6){
+          return '#DC143C';
+        }
+        else if (d.weight >= 0.6 && d.weight < 0.8){
+          return '#00008B';
+        }
+        else{
+          return '#FF1493';
+        }
+      }
+
       var link = svg.selectAll("line")
           .data(graph.links)
           .enter().append("line")
           .style("stroke", "#111")
-          .style("stroke-width", "2px");
+          .style("stroke-width", "2px")
+          .style("stroke",  function(d){ 
+      	return linkColor(d);});
+
+    
          
       var force = d3.layout.force()
         .gravity(.05)
         .charge(-240)
         .linkDistance(function(d) {
-          return 10 / d.weight;}) 
+          return 20 / d.weight;}) 
         .size([width, height]);
 
 
