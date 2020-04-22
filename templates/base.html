@@ -11,6 +11,9 @@
   <h1>Flaskr</h1>
 </nav>
 <section>
+  <select id = "list">
+    <option>All</option>
+  </select>
 <!-- Skrypt JS/D3js tutaj-->
   <script>
     var width = 960,
@@ -49,7 +52,6 @@
           return 20 / d.weight;}) 
         .size([width, height]);
 
-
       var node = svg.selectAll("circle")
           .data(graph.nodes)
           .enter().append("circle")
@@ -57,8 +59,18 @@
           .style("fill", "#999")
           .style("stroke", "#111")
           .call(force.drag)
-          .on("click", function(d){ iframe.attr("src", "http://127.0.0.1/" + d.path)});
-          //.on("dblclick", func)
+          .on("click", function(d){ iframe.attr("src", "http://127.0.0.1/" + d.path)})
+         // .on("dblclick", function(){ dblclick(d3.select(this)); })
+          .each(function(d) {
+              d3.select(this)
+              var option = document.createElement("option");
+              var txt = document.createTextNode(d.name);
+              option.appendChild(txt);
+              option.value = d.name;
+              var select = document.getElementById("list");
+              select.appendChild(option);
+            });
+
 
       var texts = svg.selectAll("text.label")
             .data(graph.nodes)
@@ -71,6 +83,7 @@
 
       node.append("title")
           .text(function(d) { return d.name; });
+          
 
       force
           .nodes(graph.nodes)
