@@ -4,13 +4,13 @@
 <!-- Load d3.js -->
 <!--
 <script src="https://d3js.org/d3.v5.js"></script>
-<script src="https://d3js.org/d3.v4.min.js"></script>-->
+-->
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <nav>
   <h1>Flaskr</h1>
 </nav>
 <section>
-  <!--<svg width="960" height="600"></svg>-->
 <!-- Skrypt JS/D3js tutaj-->
   <script>
     var width = 960,
@@ -18,6 +18,10 @@
     radius = 12;
 
     var color = d3.scale.category20();
+
+    var iframe = d3.select("body").append("iframe")
+        .attr("width", "auto")
+        .attr("height", "100%")
 
     var svg = d3.select("body").append("svg")
         .attr("width", width)
@@ -27,21 +31,7 @@
       if (error) throw error;
 
       function linkColor(d){
-        if(d.weight > 0 && d.weight < 0.05){
-          return '#00FFFF';
-        }
-        else if (d.weight >= 0.05 && d.weight < 0.1){
-          return '#0000FF';
-        }
-        else if (d.weight >= 0.1 && d.weight < 0.2){
-          return '#8A2BE2';
-        }
-        else if (d.weight >= 0.2 && d.weight < 0.5){
-          return '#FF1493';
-        }
-        else{
-          return '#DC143C';
-        }
+          return d3.rgb(255 - d.weight * 255, 255 - d.weight * 255, 255 - d.weight * 255);
       }
 
       var link = svg.selectAll("line")
@@ -51,9 +41,7 @@
           .style("stroke-width", "2px")
           .style("stroke",  function(d){ 
       	return linkColor(d);});
-
-    
-         
+ 
       var force = d3.layout.force()
         .gravity(.05)
         .charge(-240)
@@ -68,7 +56,9 @@
           .attr("r", radius - .75)
           .style("fill", "#999")
           .style("stroke", "#111")
-          .call(force.drag);
+          .call(force.drag)
+          .on("click", function(d){ iframe.attr("src", "http://127.0.0.1/" + d.path)});
+          //.on("dblclick", func)
 
       var texts = svg.selectAll("text.label")
             .data(graph.nodes)
@@ -77,16 +67,7 @@
             .attr("fill", "black")
             .attr("dx", "1.05em")
             .attr("dy", ".28em")
-            .text(function(d) {  return d.name;  });
-
-          /*node.append("text")
-            .attr("dx", -18)
-            .attr("dy", 8)
-            .style("font-size", "18px") 
-
-            .text(function (d) {
-                return d.name
-            });*/
+            .text(function(d) {  return d.path;  }); //skrócona nazwa
 
       node.append("title")
           .text(function(d) { return d.name; });
@@ -111,88 +92,5 @@
     });
       }
     });
-    /*var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
-
-    var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(function(d){return 5 / d.weight;}).strength(0.01))
-        .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .velocityDecay(0.4)
-        .force("collide", d3.forceCollide( function(d) {return d.r + 8 }).iterations(16) )
-        
-         
-    d3.json("{{url_for('static', filename='graph.json')}}", function(error, graph) {
-      if (error) throw error;
-
-      var link = svg.append("g")
-        .attr("class", "links")
-        .selectAll("line")
-        .data(graph.links)
-        .enter().append("line")
-        .attr("stroke-width", function(d) { return Math.sqrt(d.weight); });
-
-      var node = svg.append("g")
-        .attr("class", "nodes")
-        .selectAll("g")
-        .data(graph.nodes)
-        .enter().append("g")
-        
-      var circles = node.append("circle")
-          .attr("r", 10)
-          .attr("fill", "#333")
-          .call(d3.drag()
-              .on("start", dragstarted)
-              .on("drag", dragged)
-              .on("end", dragended));
-
-      var lables = node.append("text")
-          .text(function(d) {
-            return d.name;
-          })
-          .attr('x', 6)
-          .attr('y', 3);
-
-      node.append("title")
-          .text(function(d) { return d.name; });
-
-      simulation
-          .nodes(graph.nodes)
-          .on("tick", ticked);
-
-      simulation.force("link")
-          .links(graph.links);
-
-      function ticked() {
-        link
-            .attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
-
-        node
-            .attr("transform", function(d) {
-              return "translate(" + d.x + "," + d.y + ")";
-            })
-      }
-    });
-
-    function dragstarted(d) {
-      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-    }
-
-    function dragged(d) {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
-    }
-
-    function dragended(d) {
-      if (!d3.event.active) simulation.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
-    }*/
   </script>
 </section>

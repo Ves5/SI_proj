@@ -11,9 +11,15 @@ from DocumentComparator import DocumentComparator
 from utils.IOUtils import IOUtils
 import nltk
 import WebWrapper
+import webbrowser
+import threading
+from multiprocessing import Process
 
 DEMO_MODE = False
 
+def start_server():
+    webbrowser.open("http://127.0.0.1:80/", 2)
+    WebWrapper.run()
 
 def hide_components():
     bar['value'] = 0
@@ -53,7 +59,10 @@ def compare_documents(paths_to_pdf_files, pdf_names):
     drawer = GraphMaker()
     drawer.create_graph(arr, pdf_names, paths_to_pdf_files)
     drawer.graph_to_json()
-    WebWrapper.run()
+    t = threading.Thread(target=start_server)
+    t.setDaemon(True)
+    t.start()
+    
 
 
 def browse_files():
@@ -153,4 +162,6 @@ else:
     gm = GraphMaker()
     gm.create_graph(arr, filenames, filenames)
     gm.graph_to_json()
-    WebWrapper.run()
+    t = threading.Thread(target=start_server)
+    t.start()
+    WebWrapper.close()

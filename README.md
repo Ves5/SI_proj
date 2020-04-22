@@ -26,3 +26,7 @@ Instalacja przez `pip install ...` zalecana:
 
 Wizualizacja podobieństw pomiędzy plikami pdf na grafie ważonym.
 Wyświetalnie jest wykonane za pomocą biblioteki [D3js](https://d3js.org/) w przeglądarce na lokalnym serwerze uruchamianym przez aplikację.
+
+Podobieństwo pomiędzy plikami jest przedstawione jako odległość pomiędzy nimi, jak i przez kolor połączenia - im ciemniejsze tym większe podobieństwo. Po kliknieciu na wierzchołek grafu (lub w pewnych sytuacjach także po przeciągnięciu), obok otwiera się podgląd zawartości pliku .pdf przedstawianego przez ten wierzchołek.
+
+Podwójne kilknięcie na wierzchołek dołącza do widocznego grafu wszystkie inne wierzchołki które są podobne do wybranego.

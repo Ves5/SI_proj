@@ -2,6 +2,7 @@ import networkx as nx
 import json
 from networkx.readwrite import json_graph
 import WebWrapper as WW
+from utils.IOUtils import IOUtils
 
 class GraphMaker:
     """Klasa odpowiedzialna za tworzenie i zmiany na grafie podobieństw."""
@@ -22,15 +23,13 @@ class GraphMaker:
             Macierz podobieństwa wybranych plików pdf.
         pdf_names : [String]
             Lista nazw wybranych plików.
-        pdf_paths : [String]
-            Lista ścieżek do wybranych plików.
         """
         # Każdy plik otrzymuje numer identyfikacyjny.
             # Jako dodatkowe atrybuty dodawane są nazwa pliku "name"
             # oraz ścieżka do pliku "path"
-        for i, file, path in zip(range(0, len(pdf_names)),pdf_names, pdf_paths):
+        for i, file in zip(range(0, len(pdf_names)),pdf_names):
             # Dodawanie wierzchołków (plików) do grafu
-            self.graph.add_node(i, name=file, path=path)
+            self.graph.add_node(i, name=file, path=IOUtils.shorten_file_name(file))
 
         for i in range(0, len(pdf_names)):
             for j in range(i + 1, len(pdf_names)):
