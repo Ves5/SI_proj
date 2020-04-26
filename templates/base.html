@@ -2,108 +2,18 @@
 <title>Graph visualization</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <!-- Load d3.js -->
-<!--
-<script src="https://d3js.org/d3.v5.js"></script>
--->
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="//d3js.org/d3.v3.min.js"></script>
+<!-- <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script> -->
+<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
 <nav>
-  <h1>Graph visualization</h1>
+    <h1>Graph visualization</h1>
 </nav>
 <section>
-<select id = "list">
-  <option>All</option>
-</select>
-<!-- Skrypt JS/D3js tutaj-->
-  <script>
-    var width = 750,
-    height = 600,
-    radius = 12;
-
-    var color = d3.scale.category20();
-
-    var iframe = d3.select("section").append("iframe")
-        .attr("id", "iframe")
-
-    var svg = d3.select("section").append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("id","graph")
-
-    d3.json("{{url_for('static', filename='graph.json')}}", function(error, graph) {
-      if (error) throw error;
-
-      function linkColor(d){
-          return d3.rgb(255 - d.weight * 255, 255 - d.weight * 255, 255 - d.weight * 255);
-      }
-
-      var link = svg.selectAll("line")
-          .data(graph.links)
-          .enter().append("line")
-          .style("stroke", "#111")
-          .style("stroke-width", "2px")
-          .style("stroke",  function(d){ 
-      	return linkColor(d);});
- 
-      var force = d3.layout.force()
-        .gravity(.05)
-        .charge(-240)
-        .linkDistance(function(d) {
-          return 20 / d.weight;}) 
-        .size([width, height]);
-
-      var node = svg.selectAll("circle")
-          .data(graph.nodes)
-          .enter().append("circle")
-          .attr("r", radius - .75)
-          .style("fill", "#999")
-          .style("stroke", "#111")
-          .call(force.drag)
-          .on("dblclick", function(d){ iframe.attr("src", "http://127.0.0.1/" + d.path)})
-          //.on("dblclick", function(){ dblclick(d3.select(this)); })
-          .each(function(d) {
-              d3.select(this)
-              var option = document.createElement("option");
-              var txt = document.createTextNode(d.name);
-              option.appendChild(txt);
-              option.value = d.name;
-              var select = document.getElementById("list");
-              select.appendChild(option);
-            });
-
-
-      var texts = svg.selectAll("text.label")
-            .data(graph.nodes)
-            .enter().append("text")
-            .attr("class", "label")
-            .attr("fill", "black")
-            .attr("dx", "1.05em")
-            .attr("dy", ".28em")
-            .text(function(d) {  return d.path;  }); //skrócona nazwa
-
-      node.append("title")
-          .text(function(d) { return d.name; });
-          
-
-      force
-          .nodes(graph.nodes)
-          .links(graph.links)
-          .on("tick", tick)
-          .start();
-
-      function tick() {
-        node.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
-            .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
-
-        link.attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
-
-        texts.attr("transform", function(d) {
-          return "translate(" + d.x + "," + d.y + ")";
-    });
-      }
-    });
-  </script>
-  </section>
+    <form id="choose">
+        <select id="list"></select>
+        <button type="button" id="select">Select</button>
+    </form>
+    <iframe id="iframe"></iframe>
+    <svg id="graph"></svg>
+    <!-- Skrypt JS/D3js -->
+    <script type="text/javascript" src="{{ url_for('graph') }}"></script>
+</section>

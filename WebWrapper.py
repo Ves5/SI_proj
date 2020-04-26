@@ -10,29 +10,18 @@ app.config['ASSETS'] = os.path.join(app.root_path, 'assets')
 def index():
     """Strona główna wizualizacji/index.
     Tu będzie tworzony graf.
-    
-    Returns
-    -------
-    [HTML Template (Flask)]
-        Zwraca zawartość strony html na podstawie template.
     """
     return render_template('base.html')
 
-@app.route("/<filename>")
+@app.route("/pdf/<filename>")
 def iframe(filename):
     """Wyświetla wybrany plik.
-    
-    Parameters
-    ----------
-    filename : [String]
-        Nazwa pliku do wyświetlenia.
-    
-    Returns
-    -------
-    [File]
-        Plik wybrany o podanej nazwie.
     """
     return send_from_directory(app.config['ASSETS'], filename)
+
+@app.route("/load/graph")
+def graph():
+    return render_template('graph.js')
 
 def run():
     """Włącza serwer http Flaskna porcie 80.

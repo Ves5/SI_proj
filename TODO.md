@@ -1,5 +1,5 @@
 # TODO
 
-* Visualisation improvements
+* DoubleClick functionality
 * Slider - podobieństwa
-* CSS - wszystko? xD
+* Filtering nodes
