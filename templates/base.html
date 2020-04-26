@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Flaskr</title>
+<title>Graph visualization</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <!-- Load d3.js -->
 <!--
@@ -8,27 +8,27 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <nav>
-  <h1>Flaskr</h1>
+  <h1>Graph visualization</h1>
 </nav>
 <section>
-  <select id = "list">
-    <option>All</option>
-  </select>
+<select id = "list">
+  <option>All</option>
+</select>
 <!-- Skrypt JS/D3js tutaj-->
   <script>
-    var width = 960,
+    var width = 750,
     height = 600,
     radius = 12;
 
     var color = d3.scale.category20();
 
-    var iframe = d3.select("body").append("iframe")
-        .attr("width", "auto")
-        .attr("height", "100%")
+    var iframe = d3.select("section").append("iframe")
+        .attr("id", "iframe")
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("section").append("svg")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+        .attr("id","graph")
 
     d3.json("{{url_for('static', filename='graph.json')}}", function(error, graph) {
       if (error) throw error;
@@ -59,8 +59,8 @@
           .style("fill", "#999")
           .style("stroke", "#111")
           .call(force.drag)
-          .on("click", function(d){ iframe.attr("src", "http://127.0.0.1/" + d.path)})
-         // .on("dblclick", function(){ dblclick(d3.select(this)); })
+          .on("dblclick", function(d){ iframe.attr("src", "http://127.0.0.1/" + d.path)})
+          //.on("dblclick", function(){ dblclick(d3.select(this)); })
           .each(function(d) {
               d3.select(this)
               var option = document.createElement("option");
@@ -106,4 +106,4 @@
       }
     });
   </script>
-</section>
+  </section>
