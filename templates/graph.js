@@ -141,7 +141,6 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         var link = svg.selectAll("line")
             .data(links_select)
             .enter().append("line")
-            .style("stroke", "#111")
             .style("stroke-width", "2px")
             .style("stroke", function (d) {
                 return linkColour(d);
@@ -186,7 +185,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
             .on("tick", tick)
             .start();
 
-        resize();
+        //resize();
         d3.select(window).on("resize", resize);
 
         function tick() {

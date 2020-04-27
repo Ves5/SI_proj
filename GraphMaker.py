@@ -31,12 +31,14 @@ class GraphMaker:
             # Dodawanie wierzchołków (plików) do grafu
             self.graph.add_node(i, name=file, path=IOUtils.shorten_file_name(file))
 
+        id_it = 0
         for i in range(0, len(pdf_names)):
             for j in range(i + 1, len(pdf_names)):
                 # Dodawanie na podstawie macierzy podobieństwa krawędzi pomiędzy wierzchołkami,
                 # jeżeli takie istnieje
                 if arr[i][j] != 0:
-                    self.graph.add_edge(i, j, weight = arr[i][j])
+                    self.graph.add_edge(i, j, weight=arr[i][j], id=id_it)
+                    id_it += 1
                 
 
     def graph_to_json(self):
