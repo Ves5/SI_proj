@@ -11,7 +11,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     button.addEventListener("click", selection);
     function selection() {
         iframe.attr("src", "http://127.0.0.1/pdf/" + graph.nodes[select.value].path);
-        force.start();
+        svg.style("visibility", "visible");
     }
 
     // filling list
@@ -25,13 +25,14 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     // function to find all nodes that link to chosen node
     function findLinked(node_id){
         let arr = [];
+        arr.push(node_id)
         for(l of graph.links){
             if(l.source == node_id)
                 arr.push(l.target);
             if(l.target == node_id)
                 arr.push(l.source);
         }
-        // arr stores ids of all nodes that link to the chosen one
+        // arr stores ids of all nodes that link to the chosen one and itself
     }
 
     var radius = 12;
@@ -84,8 +85,8 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     force
         .nodes(graph.nodes)
         .links(graph.links)
-        .on("tick", tick);
-        //.start();
+        .on("tick", tick)
+        .start();
 
     resize();
     d3.select(window).on("resize", resize);
