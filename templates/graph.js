@@ -7,7 +7,6 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     var button = document.querySelector("#select");
     var svg_size = document.querySelector("#graph").getBoundingClientRect();
     var nodes_select = [];
-    var nodes_orig = [];
     var links_select = [];
     var links_orig = [];
 
@@ -17,39 +16,26 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         iframe.attr("src", "http://127.0.0.1/pdf/" + graph.nodes[select.value].path);
         svg.style("visibility", "visible");
         [nodes_select, links_select] = findLinked(select.value);
-        nodes_orig = nodes_select.slice();
         links_orig = links_select.slice();
         // Zmiana indeksów WAŻNE
         // Przy wyświetlaniu jako parametry source i target w krawędzi należy podac indeksy w tablicy, na ktorych znajduje się dany wierzcholek
         // NIE CHODZI O ID ZAWARTE W WIERZCHOŁKU
-        var k;
-        for (k = 0; k < links_select.length; k++){
-            var index;
-            source_change = false;
-            target_change = false;
-            for(index = 0; index < nodes_select.length; index++){
-                if (links_select[k].source == nodes_select[index].id && source_change == false){
-                    links_select[k].source = index;
-                    source_change = true;
-                }
-                if (links_select[k].target == nodes_select[index].id && target_change == false){
-                    links_select[k].target = index;
-                    target_change = true;
-                }
-            }
-        }
+        changeIndexes();
         sim();
     }
+    
 
     function dblclick(node){
         [new_nodes, new_links] = findLinkedNotSelected(node.id);
-        nodes_orig = nodes_orig.concat(new_nodes);
         links_orig = links_orig.concat(new_links);
-        nodes_select = nodes_orig.slice();
+        nodes_select = nodes_select.concat(new_nodes);
         links_select = links_orig.slice();
-        var k;
+        changeIndexes();
+        sim();
+    }
+
+    function changeIndexes(){
         for (k = 0; k < links_select.length; k++){
-            var index;
             source_change = false;
             target_change = false;
             for(index = 0; index < nodes_select.length; index++){
@@ -63,7 +49,6 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
                 }
             }
         }
-        sim();
     }
 
     // filling list
@@ -130,7 +115,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         svg.selectAll('g').remove();
         svg.selectAll("line").remove();
         svg.selectAll("circle").remove();
-        svg.selectAll("text.label").remove()
+        svg.selectAll("text.label").remove();
 
         var radius = 12;
 
@@ -141,6 +126,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         var link = svg.selectAll("line")
             .data(links_select)
             .enter().append("line")
+            .style("stroke", "#111")
             .style("stroke-width", "2px")
             .style("stroke", function (d) {
                 return linkColour(d);
@@ -185,7 +171,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
             .on("tick", tick)
             .start();
 
-        //resize();
+        resize();
         d3.select(window).on("resize", resize);
 
         function tick() {
