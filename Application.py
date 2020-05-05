@@ -46,7 +46,7 @@ def compare_documents(paths_to_pdf_files, pdf_names):
 
     # klasa od porownywania dokumentow
     dc = DocumentComparator()
-    arr = dc.compare_documents(paths_to_pdf_files, bar) #używane do krawędzi
+    arr, pos = dc.compare_documents(paths_to_pdf_files, bar) #używane do krawędzi
 
     label_info_progressbar['text'] = 'Comparing completed.'
     label_info_progressbar.update()
@@ -57,7 +57,7 @@ def compare_documents(paths_to_pdf_files, pdf_names):
 
     # TODO create thread here and make sure that previous has ended work
     drawer = GraphMaker()
-    drawer.create_graph(arr, pdf_names, paths_to_pdf_files)
+    drawer.create_graph(arr, pos, pdf_names, paths_to_pdf_files)
     drawer.graph_to_json()
     t = threading.Thread(target=start_server)
     t.setDaemon(True)
@@ -164,4 +164,3 @@ else:
     gm.graph_to_json()
     t = threading.Thread(target=start_server)
     t.start()
-    WebWrapper.close()

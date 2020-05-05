@@ -9,6 +9,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from pathlib import Path
 from hashlib import sha256
 from shutil import copy2
+from sklearn.manifold import MDS
 
 from utils.IOUtils import IOUtils
 
@@ -59,6 +60,7 @@ class DocumentComparator:
             if len(doc_content) == 0:
                 # wyciaganie zawartosci z plikow pdf
                 cached_content = doc_file.read_text()
+                
                 corpus_preproc.append(cached_content)
                 self.__update_bar(bar, steps_added=4)
             else:
@@ -70,13 +72,38 @@ class DocumentComparator:
                 self.__update_bar(bar)
                 preprocessed_text = self.__lemitize_words(preprocessed_text)
                 self.__update_bar(bar)
+
                 corpus_preproc.append(preprocessed_text)
                 doc_file.write_text(preprocessed_text, errors='xmlcharrefreplace')
+        
+        word_list = []
+        for doc in corpus_preproc:
+            doc_words = doc.split()
+            for word in doc_words:
+                if word not in word_list:
+                    word_list.append(word)
+
+        doc_word_matrix = [[0 for ii in range(len(word_list))] for jj in range(len(corpus_preproc))]
+        
+        for i in range(len(corpus_preproc)):
+            doc_words = corpus_preproc[i].split()
+            for j in range(len(doc_words)):
+                for l in range(len(word_list)):
+                    if word_list[l] == doc_words[j]:
+                        doc_word_matrix[i][l] += 1
+                        break
+                
+        # creates mds instance
+        mds = MDS(n_components=2)
 
         tfidf = self.__get_tfidf_vect_result(corpus_preproc)
         count = self.__get_count_vect_result(corpus_preproc)
 
-        return self.__get_weighted_arr(tfidf, count)
+        # weights of the files
+        weights = self.__get_weighted_arr(tfidf, count)
+        # result of mds of the weights
+        pos = mds.fit_transform(doc_word_matrix)
+        return weights, pos
 
     # term frequency–inverse document frequency - skrot od tfidf
     def __get_tfidf_vect_result(self, corpus):
@@ -86,7 +113,7 @@ class DocumentComparator:
         # cosinusowe podobienstwo, cokolwiek to jest
         sim_array = cosine_similarity(tfidf)
         # dopisanie do diagonali NaN-ow (prawdopodobnie do wyswietalnia zeby nie bylo par (A,A))
-        np.fill_diagonal(sim_array, np.nan)
+        np.fill_diagonal(sim_array, 0)
         return sim_array
 
     def __get_count_vect_result(self, corpus):
@@ -96,7 +123,7 @@ class DocumentComparator:
         # to samo co w tfidf
         sim_array = cosine_similarity(count)
         # to samo co w tfidf
-        np.fill_diagonal(sim_array, np.nan)
+        np.fill_diagonal(sim_array, 0)
         return sim_array
 
     def __get_weighted_arr(self, first_arr, second_arr, first_weight=0.7, second_weight=0.3):

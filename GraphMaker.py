@@ -13,7 +13,7 @@ class GraphMaker:
         super().__init__()
 
 
-    def create_graph(self, arr, pdf_names, pdf_paths):
+    def create_graph(self, arr, coords, pdf_names, pdf_paths):
         """Tworzy graf na podstawie macierzy podobieństw, 
             nazw plików porównywanych i ścieżek do nich.
         
@@ -27,9 +27,9 @@ class GraphMaker:
         # Każdy plik otrzymuje numer identyfikacyjny.
             # Jako dodatkowe atrybuty dodawane są nazwa pliku "name"
             # oraz ścieżka do pliku "path"
-        for i, file in zip(range(0, len(pdf_names)),pdf_names):
+        for i, file, coord in zip(range(0, len(pdf_names)),pdf_names, coords):
             # Dodawanie wierzchołków (plików) do grafu
-            self.graph.add_node(i, name=file, path=IOUtils.shorten_file_name(file))
+            self.graph.add_node(i, name=file, path=IOUtils.shorten_file_name(file), x=coord[0], y=coord[1])
 
         id_it = 0
         for i in range(0, len(pdf_names)):

@@ -6,9 +6,38 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     var select = document.querySelector("#list");
     var button = document.querySelector("#select");
     var svg_size = document.querySelector("#graph").getBoundingClientRect();
-    var nodes_select = [];
-    var links_select = [];
+    var nodes_select = graph.nodes;
+    var links_select = graph.links;
     var links_orig = [];
+    var minX = 1000;
+    var minY = 1000;
+    for (node of graph.nodes)
+    {
+        if(node.x < minX)
+            minX = node.x;
+        if(node.y < minY)
+            minY = node.y;
+    }
+    for (let i = 0; i < graph.nodes.length; i++)
+    {
+        graph.nodes[i].x += Math.abs(minX) + 12;
+        graph.nodes[i].y += Math.abs(minY) + 12;
+    }
+    var maxX = 0;
+    var maxY = 0;
+    for (node of graph.nodes)
+    {
+        if(node.x > maxX)
+            maxX = node.x;
+        if(node.y > maxY)
+            maxY = node.y;
+    }
+    for (let i = 0; i< graph.nodes.length; i++)
+    {
+        graph.nodes[i].x = (graph.nodes[i].x / maxX) * svg_size.width * 3/4;
+        graph.nodes[i].y = (graph.nodes[i].y / maxY) * svg_size.height * 3/4;
+    }
+    sim();
 
     // on click open pdf and start graph simulation
     button.addEventListener("click", selection);
@@ -143,11 +172,14 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         var node = svg.selectAll("circle")
             .data(nodes_select)
             .enter().append("circle")
+            .attr("cx", function(d){return d.x;})
+            .attr("cy", function(d){return d.y;})
             .attr("id", function(d){ return d.id; })
             .attr("r", radius - .75)
             .style("fill", "#999")
             .style("stroke", "#111")
             .call(force.drag)
+            .classed("fixed",function(d){ d.fixed = true;})
             .on("click", function (d) { iframe.attr("src", "http://127.0.0.1/pdf/" + d.path) })
             .on("dblclick", function(d){ dblclick(d); });
 
