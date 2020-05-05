@@ -11,6 +11,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     var links_orig = [];
     var minX = 1000;
     var minY = 1000;
+    // znajduje minimalny x i y
     for (node of graph.nodes)
     {
         if(node.x < minX)
@@ -18,6 +19,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         if(node.y < minY)
             minY = node.y;
     }
+    // przesuwa wszystkie wierzchołki o moduł z minimalnych wartości tak żeby każdy miał x >=0 i t >= 0
     for (let i = 0; i < graph.nodes.length; i++)
     {
         graph.nodes[i].x += Math.abs(minX);
@@ -25,6 +27,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     }
     var maxX = 0;
     var maxY = 0;
+    // znajduje maksymale x i y
     for (node of graph.nodes)
     {
         if(node.x > maxX)
@@ -32,11 +35,15 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         if(node.y > maxY)
             maxY = node.y;
     }
+    // przeskalowuje pozycję każdego wierzchołka tak żeby najpierw wartości były [0;1]
+    // a potem żeby rozłozyły się na 2/3 wielkości svg
+    // i przesuwa je o 1/5 długości/wysokości od górnej i lewej krawędzi
     for (let i = 0; i< graph.nodes.length; i++)
     {
         graph.nodes[i].x = (graph.nodes[i].x / maxX) * svg_size.width * 2/3 + svg_size.width * 1/5;
         graph.nodes[i].y = (graph.nodes[i].y / maxY) * svg_size.height * 2/3 + svg_size.height * 1/5;
     }
+    // wyświetlenie
     sim();
 
     // on click open pdf and start graph simulation

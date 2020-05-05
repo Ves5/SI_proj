@@ -77,14 +77,18 @@ class DocumentComparator:
                 doc_file.write_text(preprocessed_text, errors='xmlcharrefreplace')
         
         word_list = []
+        # tworzenie listy wszystkich unikalnych słów
         for doc in corpus_preproc:
             doc_words = doc.split()
             for word in doc_words:
                 if word not in word_list:
                     word_list.append(word)
 
+        # utworzenie macierzy pdf x słowa 
         doc_word_matrix = [[0 for ii in range(len(word_list))] for jj in range(len(corpus_preproc))]
         
+        # wypełnienie macierzy podczas wystapienia słowa w dokumencie 
+        # +1 w komórce odpowiadającej danemu słowu dla danego dokumentu
         for i in range(len(corpus_preproc)):
             doc_words = corpus_preproc[i].split()
             for j in range(len(doc_words)):
@@ -93,15 +97,16 @@ class DocumentComparator:
                         doc_word_matrix[i][l] += 1
                         break
                 
-        # creates mds instance
+        # tworzenie instancji MDS
         mds = MDS(n_components=2)
 
         tfidf = self.__get_tfidf_vect_result(corpus_preproc)
         count = self.__get_count_vect_result(corpus_preproc)
 
-        # weights of the files
+        # obliczenie wag dokumentów
         weights = self.__get_weighted_arr(tfidf, count)
-        # result of mds of the weights
+
+        # MDS oblicza pozycje dokumentów na płaszczyźnie
         pos = mds.fit_transform(doc_word_matrix)
         return weights, pos
 
