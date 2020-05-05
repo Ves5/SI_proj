@@ -20,8 +20,8 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     }
     for (let i = 0; i < graph.nodes.length; i++)
     {
-        graph.nodes[i].x += Math.abs(minX) + 12;
-        graph.nodes[i].y += Math.abs(minY) + 12;
+        graph.nodes[i].x += Math.abs(minX);
+        graph.nodes[i].y += Math.abs(minY);
     }
     var maxX = 0;
     var maxY = 0;
@@ -34,8 +34,8 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     }
     for (let i = 0; i< graph.nodes.length; i++)
     {
-        graph.nodes[i].x = (graph.nodes[i].x / maxX) * svg_size.width * 3/4;
-        graph.nodes[i].y = (graph.nodes[i].y / maxY) * svg_size.height * 3/4;
+        graph.nodes[i].x = (graph.nodes[i].x / maxX) * svg_size.width * 2/3 + svg_size.width * 1/5;
+        graph.nodes[i].y = (graph.nodes[i].y / maxY) * svg_size.height * 2/3 + svg_size.height * 1/5;
     }
     sim();
 
