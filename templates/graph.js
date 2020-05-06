@@ -6,11 +6,10 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     var select = document.querySelector("#list");
     var button = document.querySelector("#select");
     var svg_size = document.querySelector("#graph").getBoundingClientRect();
-    var nodes_select = graph.nodes;
-    var links_select = graph.links;
     var links_orig = [];
     var minX = 1000;
     var minY = 1000;
+    var first_double_click = true;
     // znajduje minimalny x i y
     for (node of graph.nodes)
     {
@@ -43,6 +42,10 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         graph.nodes[i].x = (graph.nodes[i].x / maxX) * svg_size.width * 2/3 + svg_size.width * 1/5;
         graph.nodes[i].y = (graph.nodes[i].y / maxY) * svg_size.height * 2/3 + svg_size.height * 1/5;
     }
+    //
+    let temp_graph = JSON.parse(JSON.stringify(graph))
+    var nodes_select = temp_graph.nodes;
+    var links_select = temp_graph.links;
     // wyświetlenie
     sim();
 
@@ -50,9 +53,9 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     button.addEventListener("click", selection);
     function selection() {
         iframe.attr("src", "http://127.0.0.1/pdf/" + graph.nodes[select.value].path);
-        svg.style("visibility", "visible");
         [nodes_select, links_select] = findLinked(select.value);
         links_orig = links_select.slice();
+        first_double_click = false;
         // Zmiana indeksów WAŻNE
         // Przy wyświetlaniu jako parametry source i target w krawędzi należy podac indeksy w tablicy, na ktorych znajduje się dany wierzcholek
         // NIE CHODZI O ID ZAWARTE W WIERZCHOŁKU
@@ -62,7 +65,18 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     
 
     function dblclick(node){
-        [new_nodes, new_links] = findLinkedNotSelected(node.id);
+        let new_nodes = [];
+        let new_links = [];
+        if(first_double_click){
+            first_double_click = false;
+            [new_nodes, new_links] = findLinked(node.id);
+            links_orig = [];
+            nodes_select = [];
+            links_select = [];
+        }
+        else{
+            [new_nodes, new_links] = findLinkedNotSelected(node.id);
+        }
         links_orig = links_orig.concat(new_links);
         nodes_select = nodes_select.concat(new_nodes);
         links_select = links_orig.slice();
@@ -71,7 +85,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     }
 
     function changeIndexes(){
-        for (k = 0; k < links_select.length; k++){
+        for (let k = 0; k < links_select.length; k++){
             source_change = false;
             target_change = false;
             for(index = 0; index < nodes_select.length; index++){
@@ -97,7 +111,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
     //same as below but without nodes and links that are already displayed
     function findLinkedNotSelected(node_id){
         [nodes, links] = findLinked(node_id);
-        not_selected_nodes = [];
+        let not_selected_nodes = [];
         not_selected_links = [];
         for (node of nodes){
             copy = true;
@@ -186,7 +200,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
             .style("fill", "#999")
             .style("stroke", "#111")
             .call(force.drag)
-            .classed("fixed",function(d){ d.fixed = true;})
+            .classed("fixed",function(d){ d.fixed = first_double_click;})
             .on("click", function (d) { iframe.attr("src", "http://127.0.0.1/pdf/" + d.path) })
             .on("dblclick", function(d){ dblclick(d); });
 

@@ -159,8 +159,8 @@ else:
     filenames = ['IO Analiza biznesowa i systemowa.pdf', 'IO Obszary działań IO.pdf', 'IO Projektowanie.pdf',
                  'IO Wprowadzenie.pdf', 'Kamizelka.pdf', 'Latarnik.pdf']
 
-    gm = GraphMaker()
-    gm.create_graph(arr, filenames, filenames)
-    gm.graph_to_json()
-    t = threading.Thread(target=start_server)
-    t.start()
+    #gm = GraphMaker()
+    # gm.create_graph(arr, filenames, filenames)
+    # gm.graph_to_json()
+    # t = threading.Thread(target=start_server)
+    # t.start()
