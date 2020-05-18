@@ -22,13 +22,13 @@ class DocumentComparator:
     __bar_incrementation_value = None
 
     def compare_documents(self, paths_to_pdf_files, bar):
-        # ponowne pobieranie? po co?
+     
         nltk.download('stopwords')
         nltk.download('wordnet')
         # krok zmiany progressbar (w zalezosci od ilosci plikow, nie wielkosci)
         self.__bar_incrementation_value = 100.0 / len(paths_to_pdf_files) / self.__BAR_UPDATES
         
-        # init slownikow (dict)
+        # inicjalizacja slownikow 
         documents = {}
         documents_sizes = {}
         # dla kazdego pliku stworzenie skroconej nazwy, skopiowanie do ./assets o krotszej nazwie
@@ -37,23 +37,23 @@ class DocumentComparator:
             doc_name_short = IOUtils.shorten_file_name(document_name)
             copy2(path, 'assets/' + doc_name_short)
             document_file_size = os.path.getsize(path)
-            # hashowanie nazwy?
+            # hashowanie nazwy
             doc_file = self.__get_file_path(document_name, document_file_size)
             document_content = ''
-            # jezeli nie istnieje w assets -> copy2 zle dzialalo?
+
             if not doc_file.exists():
                 document_content = IOUtils.pdf_to_text(path)
             documents[document_name] = document_content
             documents_sizes[document_name] = document_file_size
             self.__update_bar(bar)
 
-        # Create a directory if it doesn't already exist
+        # stwórz folder, jeśli jeszcze nie istnieje
         cache_dir = Path(self.__CACHE_DIR_NAME)
         if not cache_dir.exists():
             Path(cache_dir).mkdir(parents=True)
 
         self.__update_bar(bar)
-        # przerabianie tekstu do prownywania?
+        # przerabianie tekstu do prownywania
         corpus_preproc = []
         for doc_name, doc_content in documents.items():
             doc_file = self.__get_file_path(doc_name, documents_sizes[doc_name])
@@ -110,12 +110,12 @@ class DocumentComparator:
         pos = mds.fit_transform(doc_word_matrix)
         return weights, pos
 
-    # term frequency–inverse document frequency - skrot od tfidf
+
     def __get_tfidf_vect_result(self, corpus):
         vectorizer = TfidfVectorizer(strip_accents='unicode')
         # nauka slownicta i idf a potem transformacja do macierzy "document-term"
         tfidf = vectorizer.fit_transform(corpus)
-        # cosinusowe podobienstwo, cokolwiek to jest
+        # cosinusowe podobienstwo
         sim_array = cosine_similarity(tfidf)
         # dopisanie do diagonali NaN-ow (prawdopodobnie do wyswietalnia zeby nie bylo par (A,A))
         np.fill_diagonal(sim_array, 0)
@@ -123,11 +123,11 @@ class DocumentComparator:
 
     def __get_count_vect_result(self, corpus):
         vectorizer = CountVectorizer()
-        # zliczanie slow?
+        # zliczanie slow
         count = vectorizer.fit_transform(corpus)
-        # to samo co w tfidf
+        # cosinusowe podobienstwo
         sim_array = cosine_similarity(count)
-        # to samo co w tfidf
+        # dopisanie do diagonali NaN-ow (prawdopodobnie do wyswietalnia zeby nie bylo par (A,A))
         np.fill_diagonal(sim_array, 0)
         return sim_array
 
