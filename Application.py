@@ -36,7 +36,7 @@ def show_similarity_table(arr, pdf_names):
 
 
 def compare_documents(paths_to_pdf_files, pdf_names):
-    # progressbar na 0 (i tak jest niewidoczny)
+    # progressbar na 0 
     bar['value'] = 0
     bar.update()
 
@@ -55,7 +55,7 @@ def compare_documents(paths_to_pdf_files, pdf_names):
                                            command=partial(show_similarity_table, arr, pdf_names))
     button_show_similarity_table.grid(row=5, column=0)
 
-    # TODO create thread here and make sure that previous has ended work
+    # utworzenie wątku i upewnienie się, że poprzednie zakończyły pracę
     drawer = GraphMaker()
     drawer.create_graph(arr, pos, pdf_names, paths_to_pdf_files)
     drawer.graph_to_json()
@@ -70,7 +70,7 @@ def browse_files():
     if folder_path != '':
         [paths_to_pdf_files, pdf_names] = IOUtils.list_pdf_files_in_dir(folder_path)
 
-        # chowa elementu GUI?
+        # ukrycie elementów GUI
         hide_components()
 
         if len(pdf_names) < 2:
@@ -96,7 +96,7 @@ def configure_styles():
 
 
 if not DEMO_MODE:
-    # natural language tool-kit, downloading corpora (korpus lingwistyczny/zestawy slow)
+    # pobranie stopwords oraz zestawu słów
     nltk.download('stopwords')
     nltk.download('wordnet')
 
@@ -145,8 +145,8 @@ if not DEMO_MODE:
     button_browse = Button(text="Select files", command=browse_files)
     button_browse.grid(row=1, column=0, sticky="S", padx=(5, 5))
 
-    # to nie dziala lub IOUtils.delete_files_from_assets() nie dziala
     window.protocol("WM_DELETE_WINDOW", IOUtils.delete_files_from_assets())
+    
     # glowna petla widoku
     window.mainloop()
 else:
