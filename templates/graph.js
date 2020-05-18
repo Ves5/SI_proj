@@ -42,14 +42,13 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         graph.nodes[i].x = (graph.nodes[i].x / maxX) * svg_size.width * 2/3 + svg_size.width * 1/5;
         graph.nodes[i].y = (graph.nodes[i].y / maxY) * svg_size.height * 2/3 + svg_size.height * 1/5;
     }
-    //
-    let temp_graph = JSON.parse(JSON.stringify(graph))
+    let temp_graph = JSON.parse(JSON.stringify(graph)) //robienie kopii grafu
     var nodes_select = temp_graph.nodes;
     var links_select = temp_graph.links;
     // wyświetlenie
     sim();
 
-    // on click open pdf and start graph simulation
+    // po kliknięciu otwiera PDF oraz rozpoczyna symulację
     button.addEventListener("click", selection);
     function selection() {
         iframe.attr("src", "http://127.0.0.1/pdf/" + graph.nodes[select.value].path);
@@ -101,13 +100,14 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         }
     }
 
-    // filling list
+    //lista z dokumentami
     for (const node of graph.nodes) {
         let option = document.createElement("option");
         option.textContent = node.name;
         option.value = node.id;
         select.appendChild(option);
     }
+    
     //same as below but without nodes and links that are already displayed
     function findLinkedNotSelected(node_id){
         [nodes, links] = findLinked(node_id);
@@ -138,7 +138,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
         return [not_selected_nodes, not_selected_links];
     }
 
-    // function to find all nodes that link to chosen node
+    // funkcja znajdująca węzły, które są połączone z wybranym węzłem
     function findLinked(node_id){
         let arr = [];
         let links = [];
@@ -155,13 +155,13 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
                 links.push(copy);
             }
         }
-        // arr stores ids of all nodes that link to the chosen one and itself
+        // zwraca tablicę z id węzłami i linkami
         return [arr, links];
     }
 
     function sim(){
         
-        //Usuwam wszystko co było wyświetlone poprzednio
+        //usuniecie wszystkiego, co było wcześniej wyświetlone
         svg.selectAll('g').remove();
         svg.selectAll("line").remove();
         svg.selectAll("circle").remove();
@@ -212,7 +212,7 @@ d3.json("{{url_for('static', filename='graph.json')}}", function (error, graph) 
             .attr("fill", "black")
             .attr("dx", "1.05em")
             .attr("dy", ".28em")
-            .text(function (d) { return d.path; }); //skrócona nazwa*/
+            .text(function (d) { return d.path; }); //skrócona nazwa
 
         node.append("title")
             .text(function (d) { return d.name; });
