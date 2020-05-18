@@ -5,9 +5,11 @@ import WebWrapper as WW
 from utils.IOUtils import IOUtils
 
 class GraphMaker:
-    """Klasa odpowiedzialna za tworzenie i zmiany na grafie podobieństw."""
+    # Klasa odpowiedzialna za tworzenie i zmiany na grafie podobieństw
 
-    graph = nx.Graph() # Tworzony graf
+    # Tworzenie grafu
+    
+    graph = nx.Graph()  
 
     def __init__(self):
         super().__init__()
