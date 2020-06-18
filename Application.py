@@ -13,7 +13,9 @@ import nltk
 import WebWrapper
 import webbrowser
 import threading
-from multiprocessing import Process
+from zipfile import ZipFile
+import os
+import fnmatch
 
 DEMO_MODE = False
 
@@ -59,6 +61,17 @@ def compare_documents(paths_to_pdf_files, pdf_names):
     drawer = GraphMaker()
     drawer.create_graph(arr, pos, pdf_names, paths_to_pdf_files)
     drawer.graph_to_json()
+
+    # zipping files for sending to server
+    with ZipFile("graph.zip", "w") as zip:
+        # zip pdfs
+        pdfs = [f for f in os.listdir('assets/') if os.path.isfile(os.path.join("assets/", f))]
+        for name in pdfs:
+            if fnmatch.fnmatch(name, '*.pdf'):
+                zip.write('assets/'+name, arcname=name)
+        # zip graph json
+        zip.write('static/graph.json', arcname='graph.json')
+
     t = threading.Thread(target=start_server)
     t.setDaemon(True)
     t.start()
