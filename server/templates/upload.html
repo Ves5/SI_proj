@@ -15,7 +15,9 @@
 {% endwith %}
 <section>
     <form method=post enctype=multipart/form-data>
-        <input type=file name=file>
+        <input type=file name=file> <br/>
+        <label for="password">Password: </label>
+        <input type=password name=password id=password required/> <br/>
         <input type=submit value=Upload>
     </form>
 </section>

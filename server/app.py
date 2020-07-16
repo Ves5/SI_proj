@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory, flash, redirect, url_for
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
 import os, shutil
 from zipfile import ZipFile 
 
@@ -7,6 +8,7 @@ from zipfile import ZipFile
 app = Flask(__name__)
 app.config['ASSETS'] = os.path.join(app.root_path, 'assets')
 app.config['SECRET_KEY'] = b')*9 Y+:?BsImANM|'
+app.config['PASSWORD'] = generate_password_hash('yoolek123')
 
 ALLOWED_EXTENSIONS = {'zip'}
 
@@ -52,6 +54,11 @@ def upload():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             # czyszczenie zawartości /assets przed zapisaniem nowych plików
+
+            if not check_password_hash(app.config['PASSWORD'], request.form['password']):
+                flash('Wrong password')
+                return redirect(request.url)
+            
             if os.path.isdir(app.config['ASSETS']):
                 shutil.rmtree(app.config['ASSETS'])
             
@@ -64,10 +71,13 @@ def upload():
                 # rozpakowywanie archiwum
                 zip.extractall(path=app.config['ASSETS'])
 
-            # os.rename(os.path.join(app.config['ASSETS'], 'graph.json'), os.path.join(app.root_path, 'static', 'graph.json'))
-
             return redirect(url_for('index'))
         else:
             flash('Wrong file extension')
             return redirect(request.url)
     return render_template('upload.html')
+
+@app.after_request
+def add_header(response):
+    response.cache_control.max_age = 30
+    return response
