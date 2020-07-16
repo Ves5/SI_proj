@@ -19,9 +19,9 @@ import fnmatch
 
 DEMO_MODE = False
 
-def start_server():
-    webbrowser.open("http://127.0.0.1:80/", 2)
-    WebWrapper.run()
+# def start_server():
+#    webbrowser.open("http://127.0.0.1:80/", 2)
+#    WebWrapper.run()
 
 def hide_components():
     bar['value'] = 0
@@ -72,9 +72,9 @@ def compare_documents(paths_to_pdf_files, pdf_names):
         # zip graph json
         zip.write('static/graph.json', arcname='graph.json')
 
-    t = threading.Thread(target=start_server)
-    t.setDaemon(True)
-    t.start()
+    # t = threading.Thread(target=start_server)
+    # t.setDaemon(True)
+    # t.start()
     
 
 

@@ -1,0 +1,19 @@
+<!doctype html>
+<title>Graph visualization</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<!-- Load d3.js -->
+<!-- <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script> -->
+<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+<nav>
+    <h1>Graph visualization</h1>
+</nav>
+<section>
+    <form id="choose">
+        <select id="list"></select>
+        <button type="button" id="select">Select</button>
+    </form>
+    <iframe id="iframe"></iframe>
+    <svg id="graph"></svg>
+    <!-- Skrypt JS/D3js -->
+    <script type="text/javascript" src="{{ url_for('graph') }}"></script>
+</section>
